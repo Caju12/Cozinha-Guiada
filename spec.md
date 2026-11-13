@@ -1,7 +1,7 @@
 # 🍳 Especificação Técnica e Funcional Final — Cozinha Guiada
 
 > **Documento Consolidado de Requisitos, Arquitetura e Critérios de Aceite**  
-> **Status:** Projeto 100% Implementado e Homologado  
+> **Status:** Documentação consolidada com base na branch `main`; os resultados de homologação registrados pelo projeto ainda precisam ser reexecutados em ambiente limpo para confirmação independente.  
 > **Versão:** 2.0 (Final - Pós-Desenvolvimento)  
 > **Repositório:** [https://github.com/Caju12/Cozinha-Guiada](https://github.com/Caju12/Cozinha-Guiada)
 
