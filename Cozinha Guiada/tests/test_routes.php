@@ -27,9 +27,13 @@ function testRoute(string $uri, string $expectedString): bool {
     $output = ob_get_clean();
 
     $found = str_contains($output, $expectedString);
+    if (!$found) { $routeFailures++; }
     echo "Rota [{$uri}] -> " . ($found ? "OK (encontrou '{$expectedString}')" : "FALHA") . "\n";
     return $found;
 }
+
+$routeTotal = 0;
+$routeFailures = 0;
 
 echo "--- Testando Renderização das Rotas Web ---\n";
 testRoute('/', 'Cozinha Guiada');
