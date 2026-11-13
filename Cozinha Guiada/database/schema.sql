@@ -5,12 +5,6 @@
 -- ATENDE AOS REQUISITOS: RF01 a RF53, RNF05, RNF06, RNF11, RNF14, RNF18, RNF19
 -- ==============================================================================
 
-CREATE DATABASE IF NOT EXISTS `cozinha_guiada`
-  DEFAULT CHARACTER SET utf8mb4
-  DEFAULT COLLATE utf8mb4_unicode_ci;
-
-USE `cozinha_guiada`;
-
 -- Desativa temporariamente a verificação de chaves estrangeiras para permitir recriação limpa
 SET FOREIGN_KEY_CHECKS = 0;
 
@@ -49,7 +43,7 @@ CREATE TABLE `usuarios` (
   `ativo` TINYINT(1) NOT NULL DEFAULT 1, -- Para bloqueio/moderação pelo admin (RF46)
   `criado_em` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `atualizado_em` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ------------------------------------------------------------------------------
 -- 2. TABELA DE COMPATIBILIDADES ALIMENTARES (RF07, RF10, RF41, RNF19)
@@ -60,7 +54,7 @@ CREATE TABLE `compatibilidades_alimentares` (
   `nome` VARCHAR(60) NOT NULL UNIQUE, -- 'Vegetariana', 'Vegana', 'Sem lactose', 'Sem glúten'
   `slug` VARCHAR(60) NOT NULL UNIQUE,
   `descricao` VARCHAR(255) NULL
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ------------------------------------------------------------------------------
 -- 3. PREFERÊNCIAS ALIMENTARES DO USUÁRIO (RF07, CA07)
@@ -72,7 +66,7 @@ CREATE TABLE `usuario_preferencias` (
   PRIMARY KEY (`usuario_id`, `compatibilidade_id`),
   CONSTRAINT `fk_pref_usuario` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE,
   CONSTRAINT `fk_pref_compatibilidade` FOREIGN KEY (`compatibilidade_id`) REFERENCES `compatibilidades_alimentares` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ------------------------------------------------------------------------------
 -- 4. CATEGORIAS DE RECEITAS (RF51, CA51)
@@ -83,7 +77,7 @@ CREATE TABLE `categorias` (
   `slug` VARCHAR(80) NOT NULL UNIQUE,
   `descricao` VARCHAR(255) NULL,
   `criado_em` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ------------------------------------------------------------------------------
 -- 5. RECEITAS (RF01, RF12, RF16, RF17, RF31, RF34, RF36, RF38, RF39, RF40, RF48, RF50)
@@ -103,7 +97,7 @@ CREATE TABLE `receitas` (
   `criado_em` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `atualizado_em` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   CONSTRAINT `fk_receita_autor` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ------------------------------------------------------------------------------
 -- 6. ETAPAS DO MODO DE PREPARO (RF15, RF18, RF33)
@@ -114,7 +108,7 @@ CREATE TABLE `etapas_receita` (
   `ordem` INT NOT NULL DEFAULT 1,
   `descricao` TEXT NOT NULL,
   CONSTRAINT `fk_etapa_receita` FOREIGN KEY (`receita_id`) REFERENCES `receitas` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ------------------------------------------------------------------------------
 -- 7. IMAGENS DA RECEITA (RF35, RF36)
@@ -126,7 +120,7 @@ CREATE TABLE `imagens_receita` (
   `ordem` INT NOT NULL DEFAULT 1,
   `criado_em` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT `fk_imagem_receita` FOREIGN KEY (`receita_id`) REFERENCES `receitas` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ------------------------------------------------------------------------------
 -- 8. CATÁLOGO GERAL DE INGREDIENTES (RF08, RF32)
@@ -134,7 +128,7 @@ CREATE TABLE `imagens_receita` (
 CREATE TABLE `ingredientes` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
   `nome` VARCHAR(100) NOT NULL UNIQUE
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ------------------------------------------------------------------------------
 -- 9. INGREDIENTES DA RECEITA COM QUANTIDADE E UNIDADE (RF14, RF32)
@@ -149,7 +143,7 @@ CREATE TABLE `receita_ingredientes` (
   `observacao` VARCHAR(120) NULL, -- ex: "picado finamente", "em temperatura ambiente"
   CONSTRAINT `fk_rec_ing_receita` FOREIGN KEY (`receita_id`) REFERENCES `receitas` (`id`) ON DELETE CASCADE,
   CONSTRAINT `fk_rec_ing_ingrediente` FOREIGN KEY (`ingrediente_id`) REFERENCES `ingredientes` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ------------------------------------------------------------------------------
 -- 10. ALTERNATIVAS DE SUBSTITUIÇÃO DE INGREDIENTES (RF13, RF43, RF44, RF45)
@@ -163,7 +157,7 @@ CREATE TABLE `substituicoes_ingrediente` (
   `observacao` TEXT NULL,
   CONSTRAINT `fk_subst_rec_ing` FOREIGN KEY (`receita_ingrediente_id`) REFERENCES `receita_ingredientes` (`id`) ON DELETE CASCADE,
   CONSTRAINT `fk_subst_ingrediente` FOREIGN KEY (`ingrediente_substituto_id`) REFERENCES `ingredientes` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ------------------------------------------------------------------------------
 -- 11. UTENSÍLIOS CULINÁRIOS (RF16, RF34)
@@ -171,7 +165,7 @@ CREATE TABLE `substituicoes_ingrediente` (
 CREATE TABLE `utensilios` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
   `nome` VARCHAR(100) NOT NULL UNIQUE
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `receita_utensilios` (
   `receita_id` INT NOT NULL,
@@ -179,7 +173,7 @@ CREATE TABLE `receita_utensilios` (
   PRIMARY KEY (`receita_id`, `utensilio_id`),
   CONSTRAINT `fk_rec_ut_receita` FOREIGN KEY (`receita_id`) REFERENCES `receitas` (`id`) ON DELETE CASCADE,
   CONSTRAINT `fk_rec_ut_utensilio` FOREIGN KEY (`utensilio_id`) REFERENCES `utensilios` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ------------------------------------------------------------------------------
 -- 12. COMPATIBILIDADES DA RECEITA (RF10, RF11, RF12, RF41, RF42)
@@ -191,7 +185,7 @@ CREATE TABLE `receita_compatibilidades` (
   PRIMARY KEY (`receita_id`, `compatibilidade_id`),
   CONSTRAINT `fk_rec_comp_receita` FOREIGN KEY (`receita_id`) REFERENCES `receitas` (`id`) ON DELETE CASCADE,
   CONSTRAINT `fk_rec_comp_compat` FOREIGN KEY (`compatibilidade_id`) REFERENCES `compatibilidades_alimentares` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ------------------------------------------------------------------------------
 -- 13. CATEGORIZAÇÃO DAS RECEITAS (RF03, RF51)
@@ -203,7 +197,7 @@ CREATE TABLE `receita_categorias` (
   PRIMARY KEY (`receita_id`, `categoria_id`),
   CONSTRAINT `fk_rec_cat_receita` FOREIGN KEY (`receita_id`) REFERENCES `receitas` (`id`) ON DELETE CASCADE,
   CONSTRAINT `fk_rec_cat_categoria` FOREIGN KEY (`categoria_id`) REFERENCES `categorias` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ------------------------------------------------------------------------------
 -- 14. RECEITAS FAVORITAS (RF20, RF21, RF22)
@@ -215,7 +209,7 @@ CREATE TABLE `favoritos` (
   PRIMARY KEY (`usuario_id`, `receita_id`),
   CONSTRAINT `fk_fav_usuario` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE,
   CONSTRAINT `fk_fav_receita` FOREIGN KEY (`receita_id`) REFERENCES `receitas` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ------------------------------------------------------------------------------
 -- 15. HISTÓRICO DE VISUALIZAÇÕES (RF23, RF24)
@@ -227,7 +221,7 @@ CREATE TABLE `historico_receitas` (
   `visualizado_em` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT `fk_hist_usuario` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE,
   CONSTRAINT `fk_hist_receita` FOREIGN KEY (`receita_id`) REFERENCES `receitas` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ------------------------------------------------------------------------------
 -- 16. COMENTÁRIOS NAS RECEITAS (RF25, RF26, RF27, RF49, RF50)
@@ -242,7 +236,7 @@ CREATE TABLE `comentarios` (
   `atualizado_em` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   CONSTRAINT `fk_coment_usuario` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE,
   CONSTRAINT `fk_coment_receita` FOREIGN KEY (`receita_id`) REFERENCES `receitas` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ------------------------------------------------------------------------------
 -- 17. AVALIAÇÕES (NOTAS DE 1 A 5) (RF28, CA28)
@@ -257,7 +251,7 @@ CREATE TABLE `avaliacoes` (
   CONSTRAINT `chk_nota_intervalo` CHECK (`nota` BETWEEN 1 AND 5),
   CONSTRAINT `fk_aval_usuario` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE,
   CONSTRAINT `fk_aval_receita` FOREIGN KEY (`receita_id`) REFERENCES `receitas` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ------------------------------------------------------------------------------
 -- 18. DENÚNCIAS DE RECEITAS E COMENTÁRIOS (RF29, RF52, CA29, CA52)
@@ -274,4 +268,4 @@ CREATE TABLE `denuncias` (
   `criado_em` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT `fk_denuncia_autor` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE,
   CONSTRAINT `fk_denuncia_admin` FOREIGN KEY (`resolvido_por`) REFERENCES `usuarios` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
