@@ -130,7 +130,7 @@ DB_PASS=
 ### 4. Inicialização do Servidor Local
 Você pode rodar o servidor embutido do PHP apontando para a pasta pública:
 ```powershell
-& "C:\xampp\php\php.exe" -S 127.0.0.1:8000 -t public
+& "C:\xampp\php\php.exe" -S 127.0.0.1:8000 -t public public/index.php
 ```
 Em seguida, acesse no navegador: **[http://127.0.0.1:8000](http://127.0.0.1:8000)**.
 
