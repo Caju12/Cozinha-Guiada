@@ -1,0 +1,23 @@
+# Cozinha Guiada — execução PHP no Vercel usando FrankenPHP
+# Compatível com a versão PHP 8.2 documentada pelo projeto.
+
+FROM dunglas/frankenphp:1-php8.2-alpine
+
+WORKDIR /app
+
+# Extensão necessária para conectar ao MySQL/MariaDB via PDO.
+RUN install-php-extensions pdo_mysql
+
+# Copia a aplicação completa (config, src, views, public e demais arquivos).
+COPY . /app
+
+# Configuração do servidor HTTP e do document root.
+COPY Caddyfile /etc/caddy/Caddyfile
+
+# Garante que o diretório de uploads exista e possa ser escrito pelo PHP.
+RUN mkdir -p /app/public/uploads/receitas \
+    && chown -R www-data:www-data /app/public/uploads
+
+ENV PORT=80
+
+CMD ["frankenphp", "run", "--config", "/etc/caddy/Caddyfile"]
