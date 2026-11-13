@@ -1,0 +1,6 @@
+Options -Indexes
+
+# Impede a execução e o acesso direto a scripts enviados para a pasta de imagens.
+<FilesMatch "\\.(php[0-9]?|phtml|phar|cgi|pl|asp|aspx|jsp)$">
+    Require all denied
+</FilesMatch>
