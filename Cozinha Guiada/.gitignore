@@ -1,0 +1,12 @@
+# Credenciais e configurações locais
+.env
+
+# Arquivos enviados pelos usuários (mantém apenas o .htaccess e o marcador)
+public/uploads/receitas/*
+!public/uploads/receitas/.htaccess
+!public/uploads/receitas/.gitkeep
+
+# Arquivos temporários do sistema operacional/editores
+.DS_Store
+Thumbs.db
+*.log
