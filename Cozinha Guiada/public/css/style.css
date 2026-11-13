@@ -1,0 +1,81 @@
+/* ==============================================================================
+   PROJETO: Cozinha Guiada
+   ARQUIVO: public/css/style.css
+   DESCRIÇÃO: Estilos customizados, aprimoramentos de acessibilidade e impressão (RNF01, RNF15)
+   ============================================================================== */
+
+/* Tipografia e suavização */
+html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Foco visível acessível para navegação por teclado (RNF15) */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+    outline: 2px solid #d97706 !important;
+    outline-offset: 2px !important;
+}
+
+/* Barra de rolagem personalizada limpa */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f5f5f4;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #d6d3d1;
+    border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #a8a29e;
+}
+
+/* ==============================================================================
+   ESTILOS DE IMPRESSÃO (Receitas prontas para imprimir em papel)
+   ============================================================================== */
+@media print {
+    header,
+    footer,
+    nav,
+    #wakelock-toggle,
+    #wakelock-status,
+    #timer-display,
+    #btn-prev,
+    #btn-next,
+    #report-modal,
+    form,
+    button,
+    .no-print {
+        display: none !important;
+    }
+
+    body {
+        background: #ffffff !important;
+        color: #000000 !important;
+        font-size: 12pt !important;
+    }
+
+    .bg-white,
+    .bg-stone-50,
+    .bg-stone-900,
+    .bg-stone-950 {
+        background: transparent !important;
+        box-shadow: none !important;
+        border: none !important;
+    }
+
+    a {
+        text-decoration: none !important;
+        color: #000000 !important;
+    }
+}
