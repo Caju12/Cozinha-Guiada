@@ -1,0 +1,21 @@
+# Cozinha Guiada — configuração de publicação no InfinityFree
+Options -Indexes
+RewriteEngine On
+
+# Bloqueia acesso HTTP às pastas internas da aplicação.
+RewriteRule ^(config|src|views|database|tests)(/|$) - [F,L,NC]
+
+# Bloqueia arquivos de ambiente e metadados do controle de versão.
+RewriteRule ^\.env([./].*)?$ - [F,L,NC]
+RewriteRule ^(\.git|\.github)(/|$) - [F,L,NC]
+
+# Os caminhos públicos usados pelo sistema ficam dentro de /public.
+RewriteRule ^(css|js|uploads)(/.*)?$ public/$1$2 [L]
+
+# Entrega arquivos públicos existentes diretamente.
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# Encaminha as demais rotas ao front controller.
+RewriteRule ^ public/index.php [QSA,L]
