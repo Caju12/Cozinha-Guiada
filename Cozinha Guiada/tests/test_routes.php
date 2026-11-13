@@ -9,6 +9,8 @@ require_once dirname(__DIR__) . '/config/constants.php';
 require_once CONFIG_PATH . '/database.php';
 
 function testRoute(string $uri, string $expectedString): bool {
+    global $routeTotal, $routeFailures;
+    $routeTotal++;
     $_SERVER['REQUEST_METHOD'] = 'GET';
     $_SERVER['REQUEST_URI'] = $uri;
     $_SERVER['SCRIPT_NAME'] = '/index.php';
@@ -69,3 +71,6 @@ testRoute('/admin/denuncias', 'Fila de Moderação de Denúncias');
 testRoute('/admin/categorias', 'Categorias de Receitas');
 
 Session::destroy();
+
+echo "\\nResumo das rotas: {$routeTotal} verificações, " . ($routeTotal - $routeFailures) . " aprovadas, {$routeFailures} falhas.\\n";
+exit($routeFailures === 0 ? 0 : 1);
