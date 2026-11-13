@@ -123,9 +123,8 @@ DB_HOST=localhost
 DB_PORT=3306
 DB_NAME=cozinha_guiada
 DB_USER=root
-DB_PASS=alunoifro
-APP_URL=http://127.0.0.1:8000
-APP_ENV=development
+DB_PASS=
+# A aplicação usa os padrões definidos no código quando a variável não é informada.
 ```
 
 ### 4. Inicialização do Servidor Local
