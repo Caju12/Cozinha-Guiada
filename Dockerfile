@@ -1,11 +1,11 @@
 # PHP + Apache container. SQLite data must be mounted at /var/www/html/storage.
 FROM php:8.3-apache
 
-# pdo_sqlite needs SQLite development headers at build time.
+# Install development headers and pkg-config before compiling PHP extensions.
+# mbstring is needed by input validation; pdo_sqlite/pdo_mysql power database access.
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends libsqlite3-dev \
-    && docker-php-ext-install pdo_mysql pdo_sqlite \
-    && apt-get purge -y --auto-remove libsqlite3-dev \
+    && apt-get install -y --no-install-recommends libsqlite3-dev pkg-config libonig-dev \
+    && docker-php-ext-install pdo_mysql pdo_sqlite mbstring \
     && rm -rf /var/lib/apt/lists/* \
     && a2enmod headers
 
