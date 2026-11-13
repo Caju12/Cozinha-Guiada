@@ -1,11 +1,10 @@
-# Ignore local environment
+# Local environment and data
 .env
-
-# Ignore local SQLite database
 storage/*.sqlite
 storage/*.sqlite3
+storage/*.db
 
-# Ignore editor and OS files
+# OS/editor files
 .DS_Store
 .vscode/
 .idea/

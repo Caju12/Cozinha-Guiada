@@ -1,166 +1,89 @@
 # Especificação Final — Cozinha Guiada
 
-## 1. Objetivo
+## Objetivo e escopo entregue
 
-O sistema Cozinha Guiada é uma aplicação web para auxiliar pessoas com pouca experiência culinária a encontrar receitas acessíveis, com instruções claras, dicas de preparo e fluxo simples de cadastro.
+Aplicação web em PHP para pessoas iniciantes na cozinha. A versão presente neste repositório permite criar conta, entrar/sair, consultar receitas cadastradas e, autenticado, cadastrar receitas com categoria, tempo e dificuldade. Não afirmar como implementadas funcionalidades não listadas aqui; a especificação extensa anterior descreve propostas, não o escopo que foi possível confirmar no código atual.
 
-## 2. Usuários
+## Usuários e casos de uso
 
-- Visitante: pode consultar receitas públicas.
-- Usuário cadastrado: registra-se e faz login.
-- Administrador: pode gerenciar categorias e visualizar conteúdo no painel administrativo.
+- Visitante: cadastro e consulta do catálogo de receitas.
+- Usuário cadastrado: login/logout e cadastro de receitas.
 
-## 3. Casos de uso
+Fluxo principal: criar conta → entrar → cadastrar receita → conferir a receita na listagem → sair.
 
-- Cadastro de usuário
-- Login e logout
-- Consulta de receitas
-- Visualização de detalhes
-- Criação de nova receita por usuário autenticado
-- Gerenciamento de categorias
+## Requisitos funcionais
 
-## 4. Requisitos funcionais
+1. Cadastro com validação básica e senha armazenada com `password_hash`.
+2. Login usando `password_verify` e sessão.
+3. Logout com remoção da sessão.
+4. Listagem pública das receitas.
+5. Cadastro de receita para usuário autenticado.
+6. Categorias iniciais exibidas no formulário.
 
-- RF01: cadastrar usuário
-- RF02: autenticar usuário
-- RF03: listar receitas
-- RF04: ver detalhes da receita
-- RF05: criar receita
-- RF06: listar categorias
-- RF07: logout
+## Requisitos não funcionais e segurança
 
-## 5. Decisão de stack
+- PHP 8.2+, PDO, prepared statements e escaping HTML.
+- Token CSRF nos formulários POST.
+- Cookie de sessão `HttpOnly`, `SameSite=Lax`, `Secure` quando servido em HTTPS; ID de sessão regenerado após login.
+- `.env` é local e ignorado pelo Git; `.env.example` contém apenas exemplos.
+- Esta revisão de código não substitui uma auditoria de segurança completa nem validação dinâmica.
 
-- Linguagem: PHP 8.2
-- Frontend: HTML, CSS, PHP
-- Banco: SQLite por padrão para execução local simples; MySQL/MariaDB para ambiente de produção
-- Servidor local: `php -S localhost:8000 -t public`
+## Stack e ambiente
 
-## 6. Modelo de dados
+- PHP 8.2 ou superior; extensões necessárias: `pdo_sqlite` e `mbstring` no modo padrão, ou `pdo_mysql` no modo MySQL.
+- Servidor local: servidor embutido do PHP.
+- Sem dependências Composer/npm.
+- O ambiente operacional não foi executado por esta ferramenta. Os comandos abaixo destinam-se a Linux/macOS; para Windows, há alternativa para copiar o `.env`.
 
-### Tabela: users
+## Banco e tabelas
 
-| Campo | Tipo | Observação |
-|---|---|---|
-| id | INT PK | chave primária |
-| nome | VARCHAR(120) | nome do usuário |
-| email | VARCHAR(180) | único |
-| senha_hash | VARCHAR(255) | hash bcrypt |
-| perfil | ENUM | `usuario` ou `admin` |
-| created_at | TIMESTAMP | data do cadastro |
+Padrão local: SQLite 3, arquivo `storage/cozinha_guiada.sqlite`, criado automaticamente na primeira requisição. As tabelas SQLite são criadas pela aplicação. Banco alternativo: MySQL 8/MariaDB 10.6+, criado/importado com `database/schema.sql`.
 
-### Tabela: categories
+| Tabela | Campos principais | Chave primária | Relacionamentos |
+|---|---|---|---|
+| `users` | id, nome, email, senha_hash, perfil, created_at | id | — |
+| `categories` | id, nome | id | — |
+| `recipes` | id, user_id, titulo, descricao, categoria_id, tempo_preparo, dificuldade, created_at | id | user_id → users.id; categoria_id → categories.id (opcional) |
 
-| Campo | Tipo | Observação |
-|---|---|---|
-| id | INT PK | chave primária |
-| nome | VARCHAR(80) | nome da categoria |
+O script SQL e o bootstrap SQLite inserem as categorias Café da Manhã, Almoço, Sobremesas, Saladas e Massas. Não há usuário ou senha de teste predefinidos: cadastre um usuário pela tela inicial.
 
-### Tabela: recipes
+## Variáveis de ambiente
 
-| Campo | Tipo | Observação |
-|---|---|---|
-| id | INT PK | chave primária |
-| user_id | INT FK | referência para users |
-| titulo | VARCHAR(150) | título da receita |
-| descricao | TEXT | resumo |
-| categoria_id | INT FK | referência para categories |
-| tempo_preparo | INT | em minutos |
-| dificuldade | VARCHAR(20) | facil/medio/dificil |
-| imagem_url | VARCHAR(255) | opcional |
-| created_at | TIMESTAMP | data da criação |
+Copie `.env.example` para `.env` e ajuste conforme necessário:
 
-### Tabela: ingredientes
+| Variável | Uso |
+|---|---|
+| `APP_ENV` | ambiente; use `local` localmente e `production` na hospedagem |
+| `DB_DRIVER` | `sqlite` (padrão) ou `mysql` |
+| `DB_NAME` | caminho do arquivo SQLite relativo à raiz do projeto, ou nome do banco MySQL |
+| `DB_HOST`, `DB_PORT` | host e porta MySQL; ignorados em SQLite |
+| `DB_USER`, `DB_PASS` | usuário e senha do banco MySQL; nunca use credenciais reais em commits |
+| `APP_URL` | URL base informativa do app |
+| `SESSION_NAME` | nome do cookie de sessão |
 
-| Campo | Tipo | Observação |
-|---|---|---|
-| id | INT PK | chave primária |
-| recipe_id | INT FK | referência para recipes |
-| nome | VARCHAR(120) | nome do ingrediente |
-| quantidade | VARCHAR(50) | quantidade ou unidade |
+## Instalação e execução
 
-### Tabela: favoritos
+1. Instale PHP 8.2+ e habilite `pdo_sqlite` e `mbstring` (`pdo_mysql` também se for escolher MySQL). Confirme com `php -v` e `php -m`.
+2. Clone: `git clone https://github.com/Caju12/Cozinha-Guiada.git`
+3. Entre na pasta: `cd Cozinha-Guiada`.
+4. Copie a configuração: Linux/macOS `cp .env.example .env`; PowerShell `Copy-Item .env.example .env`.
+5. Para SQLite, mantenha `DB_DRIVER=sqlite` e `DB_NAME=storage/cozinha_guiada.sqlite`; não é necessário importar SQL.
+6. Para MySQL/MariaDB, crie o banco `cozinha_guiada`, configure `DB_DRIVER=mysql` e os valores `DB_*` no `.env`, então execute `mysql -u root -p < database/schema.sql` (ou importe pelo cliente equivalente).
+7. Inicie o servidor na raiz do projeto: `php -S 127.0.0.1:8000 -t public`.
+8. Abra http://127.0.0.1:8000.
 
-| Campo | Tipo | Observação |
-|---|---|---|
-| id | INT PK | chave primária |
-| user_id | INT FK | referência para users |
-| recipe_id | INT FK | referência para recipes |
+## Como testar
 
-## 7. Requisitos não funcionais
+1. Na página inicial, cadastre uma conta fictícia com senha de teste (mínimo 8 caracteres).
+2. Entre com a conta criada.
+3. Cadastre uma receita com título, descrição, categoria, tempo e dificuldade.
+4. Confirme que a receita aparece no catálogo após o envio.
+5. Saia e entre novamente para verificar a sessão e a persistência.
 
-- Interface simples e responsiva
-- Validação dos campos no backend
-- Hash de senha seguro
-- Consultas com prepared statements
-- Uso de variáveis de ambiente para configuração
+## Limitações conhecidas
 
-## 8. Instalação e execução
-
-### Ambiente
-
-- PHP 8.2
-- SQLite 3 (padrão) ou MySQL 8 / MariaDB 10.6+
-- Sistema operacional testado: Linux / Windows / macOS
-
-### Dependências
-
-Não há dependências externas para execução local básica. O projeto usa apenas a extensão PDO do PHP.
-
-### Banco de dados
-
-- SGBD: SQLite (padrão) ou MySQL/MariaDB
-- Banco: `cozinha_guiada`
-- Script SQL: `database/schema.sql`
-
-Importação MySQL:
-
-```bash
-mysql -u root -p < database/schema.sql
-```
-
-### Variáveis de ambiente
-
-O repositório contém o arquivo `.env.example` com exemplo de configuração. Copie para `.env` e ajuste os valores.
-
-```env
-APP_ENV=local
-DB_DRIVER=sqlite
-DB_HOST=localhost
-DB_PORT=3306
-DB_NAME=cozinha_guiada
-DB_USER=root
-DB_PASS=
-APP_URL=http://localhost:8000
-```
-
-### Passo a passo de instalação
-
-1. Clone o repositório: `git clone https://github.com/Caju12/Cozinha-Guiada.git`
-2. Acesse o diretório: `cd Cozinha-Guiada`
-3. Copie o exemplo de ambiente: `cp .env.example .env`
-4. Ajuste as variáveis de ambiente conforme o banco local
-5. Se for usar MySQL, importe `database/schema.sql`
-6. Inicie o servidor: `php -S localhost:8000 -t public`
-7. Abra `http://localhost:8000`
-
-## 9. Como testar
-
-1. Cadastre um usuário novo.
-2. Faça login com o novo usuário.
-3. Veja a lista de receitas na home.
-4. Cadastre uma nova receita no painel autenticado.
-5. Confirme que os dados ficam persistidos no banco.
-
-## 10. Problemas conhecidos
-
-- A implantação pública em produção depende de um serviço externo (Render, Railway, Vercel ou ambiente web) e não foi configurada neste repositório.
-- O professor deve adicionar o usuário `rafaelpitwak` como colaborador no GitHub manualmente.
-
-## 11. Critérios de aceite
-
-- A aplicação roda localmente seguindo a documentação acima
-- O cadastro e login funcionam
-- O banco salva receitas e usuários
-- Não há credenciais em código-fonte
-- O sistema usa variáveis de ambiente para configuração
+- A aplicação ainda não implementa busca, ingredientes estruturados, favoritos, moderação ou painel administrativo.
+- Para MySQL, importar o schema é obrigatório; a aplicação não executa migrações MySQL.
+- SQLite em hospedagem precisa de armazenamento persistente; sem isso os dados podem desaparecer após reinício/redeploy.
+- O código foi revisado estaticamente, mas não foi possível executar testes PHP ou confirmar um deploy por esta sessão.
+- A URL pública ainda depende de criar/vincular um serviço no provedor de hospedagem.
