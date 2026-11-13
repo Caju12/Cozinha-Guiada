@@ -1,0 +1,10 @@
+# O Vercel encaminha o tráfego HTTP para a porta configurada em PORT.
+:{$PORT:80} {
+    root * /app/public
+
+    encode zstd gzip
+
+    # Entrega CSS, JavaScript, imagens e outros arquivos públicos diretamente;
+    # encaminha as rotas PHP ao front controller public/index.php.
+    php_server
+}
