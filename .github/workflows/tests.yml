@@ -1,0 +1,58 @@
+name: Testes automatizados
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  php-tests:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: cozinha_guiada
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -proot"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+    steps:
+      - name: Baixar repositório
+        uses: actions/checkout@v4
+
+      - name: Preparar PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: pdo_mysql, fileinfo, mbstring
+          coverage: none
+
+      - name: Validar sintaxe PHP
+        working-directory: Cozinha Guiada
+        run: |
+          find . -type f -name '*.php' -print0 | xargs -0 -n1 php -l
+
+      - name: Criar banco e carregar dados de teste
+        working-directory: Cozinha Guiada
+        env:
+          MYSQL_PWD: root
+        run: |
+          mysql --host=127.0.0.1 --port=3306 --user=root < database/schema.sql
+          mysql --host=127.0.0.1 --port=3306 --user=root cozinha_guiada < database/seed.sql
+
+      - name: Executar oito suítes automatizadas
+        working-directory: Cozinha Guiada
+        env:
+          DB_HOST: 127.0.0.1
+          DB_PORT: 3306
+          DB_NAME: cozinha_guiada
+          DB_USER: root
+          DB_PASS: root
+        run: php tests/run_all_tests.php
