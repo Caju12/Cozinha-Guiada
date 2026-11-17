@@ -50,12 +50,13 @@ class CommentController {
 
         $stmt = $this->db->prepare("
             INSERT INTO comentarios (usuario_id, receita_id, texto, status) 
-            VALUES (?, ?, ?, 'ativo')
+            VALUES (?, ?, ?, 'ativo') RETURNING id
         ");
         $stmt->execute([$userId, $recipeId, $texto]);
+        $commentId = (int)$stmt->fetchColumn();
 
         Session::flash('success', 'Seu comentário foi publicado com sucesso!');
-        $this->redirectBack("#comentario-" . $this->db->lastInsertId());
+        $this->redirectBack("#comentario-" . $commentId);
     }
 
     /**
