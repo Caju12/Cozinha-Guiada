@@ -53,10 +53,10 @@ class AuthService {
             // Perfil forçado como 'cadastrado' para impedir autoatribuição de 'administrador'
             $stmt = $this->db->prepare("
                 INSERT INTO usuarios (nome, email, senha, perfil, ativo)
-                VALUES (?, ?, ?, ?, 1)
+                VALUES (?, ?, ?, ?, 1) RETURNING id
             ");
             $stmt->execute([$nome, $email, $senhaHash, ROLE_CADASTRADO]);
-            $userId = (int) $this->db->lastInsertId();
+            $userId = (int) $stmt->fetchColumn();
 
             // Salva preferências alimentares selecionadas (RF07 / CA07)
             if (!empty($preferencias)) {
