@@ -70,7 +70,7 @@ class AdminController {
         $params = [];
 
         if (!empty($search)) {
-            $sql .= " AND (nome LIKE ? OR email LIKE ?)";
+            $sql .= " AND (nome ILIKE ? OR email ILIKE ?)";
             $params[] = "%{$search}%";
             $params[] = "%{$search}%";
         }
