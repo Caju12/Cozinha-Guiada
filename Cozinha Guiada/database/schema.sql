@@ -207,7 +207,7 @@ CREATE TABLE comentarios (
   usuario_id INT NOT NULL,
   receita_id INT NOT NULL,
   texto TEXT NOT NULL,
-  status VARCHAR(10) CHECK (status_moderacao IN ('ativo', 'removido')) NOT NULL DEFAULT 'ativo',
+  status VARCHAR(10) CHECK (status IN ('ativo', 'removido')) NOT NULL DEFAULT 'ativo',
   criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT fk_coment_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios (id) ON DELETE CASCADE,
