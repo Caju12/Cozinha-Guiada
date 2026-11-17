@@ -54,7 +54,7 @@ class Recipe {
 
         // 1. Busca textual livre por título ou descrição (RF02)
         if (!empty($filters['q'])) {
-            $sql .= " AND (r.titulo LIKE ? OR r.descricao LIKE ?)";
+            $sql .= " AND (r.titulo ILIKE ? OR r.descricao ILIKE ?)";
             $searchTerm = '%' . trim($filters['q']) . '%';
             $params[] = $searchTerm;
             $params[] = $searchTerm;
