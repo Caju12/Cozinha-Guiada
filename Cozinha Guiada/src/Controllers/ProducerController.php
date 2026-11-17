@@ -125,13 +125,13 @@ class ProducerController {
                 INSERT INTO receitas (
                     usuario_id, titulo, descricao, tempo_preparo_minutos, rendimento, 
                     temperatura, intensidade_fogo, ponto_esperado, visibilidade, status_moderacao
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'ativo')
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'ativo') RETURNING id
             ");
             $stmt->execute([
                 $userId, $titulo, $descricao, $tempoPreparo, $rendimento,
                 $temperatura, $fogo, $pontoEsperado, $visibilidade
             ]);
-            $recipeId = (int)$this->db->lastInsertId();
+            $recipeId = (int)$stmt->fetchColumn();
 
             // 2. Upload de imagem se fornecida (RF35, RF36)
             if (!empty($_FILES['imagem']) && $_FILES['imagem']['error'] !== UPLOAD_ERR_NO_FILE) {
@@ -425,7 +425,7 @@ class ProducerController {
     private function saveIngredientsAndSubstitutions(int $recipeId, array $rawIngredients): void {
         $stmtIng = $this->db->prepare("
             INSERT INTO receita_ingredientes (receita_id, ingrediente_id, quantidade, unidade, observacao)
-            VALUES (?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?) RETURNING id
         ");
 
         $stmtSubst = $this->db->prepare("
@@ -443,7 +443,7 @@ class ProducerController {
             $obs = trim($item['observacao'] ?? '');
 
             $stmtIng->execute([$recipeId, $ingId, $qtd, $unidade, $obs]);
-            $recIngId = (int)$this->db->lastInsertId();
+            $recIngId = (int)$stmtIng->fetchColumn();
 
             // Salva substituição se informada (RF13, RF43, RF44)
             $substTexto = trim($item['substituto_texto'] ?? '');
@@ -479,8 +479,8 @@ class ProducerController {
             return (int)$id;
         }
 
-        $stmtIns = $this->db->prepare("INSERT INTO ingredientes (nome) VALUES (?)");
+        $stmtIns = $this->db->prepare("INSERT INTO ingredientes (nome) VALUES (?) RETURNING id");
         $stmtIns->execute([$nome]);
-        return (int)$this->db->lastInsertId();
+        return (int)$stmtIns->fetchColumn();
     }
 }
