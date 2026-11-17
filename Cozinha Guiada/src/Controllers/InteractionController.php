@@ -88,7 +88,7 @@ class InteractionController {
             JOIN usuarios u ON r.usuario_id = u.id
             LEFT JOIN avaliacoes a ON a.receita_id = r.id
             WHERE f.usuario_id = ? AND r.status_moderacao = 'ativo'
-            GROUP BY r.id, f.criado_em, u.id
+            GROUP BY r.id, u.id, f.criado_em, u.nome, r.titulo, r.descricao, r.tempo_preparo_minutos, r.rendimento
             ORDER BY f.criado_em DESC
         ");
         $stmt->execute([$userId]);
@@ -130,7 +130,7 @@ class InteractionController {
             JOIN usuarios u ON r.usuario_id = u.id
             LEFT JOIN avaliacoes a ON a.receita_id = r.id
             WHERE h.usuario_id = ? AND r.status_moderacao = 'ativo'
-            GROUP BY r.id
+            GROUP BY r.id, u.id, u.nome, r.titulo, r.descricao, r.tempo_preparo_minutos, r.rendimento
             ORDER BY ultimo_acesso DESC
         ");
         $stmt->execute([$userId]);
@@ -200,7 +200,7 @@ class InteractionController {
         $stmt = $this->db->prepare("
             INSERT INTO avaliacoes (usuario_id, receita_id, nota) 
             VALUES (?, ?, ?)
-            ON DUPLICATE KEY UPDATE nota = VALUES(nota), atualizado_em = NOW()
+            ON CONFLICT (usuario_id, receita_id) DO UPDATE SET nota = EXCLUDED.nota, atualizado_em = CURRENT_TIMESTAMP
         ");
         $stmt->execute([$userId, $recipeId, $nota]);
 
