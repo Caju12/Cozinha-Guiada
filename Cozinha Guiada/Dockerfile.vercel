@@ -5,8 +5,8 @@ FROM dunglas/frankenphp:1-php8.2-alpine
 
 WORKDIR /app
 
-# Extensão necessária para conectar ao MySQL/MariaDB via PDO.
-RUN install-php-extensions pdo_mysql
+# Extensão necessária para conectar ao PostgreSQL via PDO.
+RUN install-php-extensions pdo_pgsql
 
 # Copia a aplicação completa (config, src, views, public e demais arquivos).
 COPY . /app
