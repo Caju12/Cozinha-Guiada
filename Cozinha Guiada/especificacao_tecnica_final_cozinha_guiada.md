@@ -337,3 +337,11 @@ O arquivo `database/seed.sql` cadastra três usuários fictícios de teste. Todo
 * **Repositório GitHub:** [https://github.com/Caju12/Cozinha-Guiada](https://github.com/Caju12/Cozinha-Guiada)
 * **Colaborador adicionado:** O professor `rafaelpitwak` foi convidado com permissão de escrita (*Write*) nas configurações do repositório (**Settings ➔ Collaborators**).
 * **Publicação em Nuvem:** O sistema conta com conteinerização Docker baseada em FrankenPHP (`Dockerfile.vercel`), configuração de rotas e assets (`Caddyfile`), e suporte ao PostgreSQL do Supabase via Connection Pooler (porta 6543).
+
+### 9.1. Estado atual da publicação na Vercel
+
+* **Endereço do site publicado:** [https://cozinhaguiada.vercel.app/](https://cozinhaguiada.vercel.app/)
+* **Situação:** O projeto foi publicado na plataforma Vercel e o endereço está acessível. Entretanto, foi identificado um problema durante a execução da aplicação: o layout inicial é carregado, mas as funcionalidades do sistema não são exibidas corretamente.
+* **Erro apresentado:** No corpo da página, é exibida a mensagem genérica: **“Ops! Algo deu errado — Ocorreu um problema ao processar sua requisição. Por favor, tente novamente em instantes.”**
+* **Estado da resolução:** A causa do erro ainda está em investigação. Portanto, embora a publicação esteja realizada, o funcionamento das funcionalidades do sistema ainda não foi validado.
+
