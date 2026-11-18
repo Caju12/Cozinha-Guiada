@@ -41,7 +41,7 @@
                         Desenvolvimento de Sistemas &copy; <?= date('Y') ?>
                     </p>
                     <p class="text-xs text-stone-500">
-                        Construído com PHP 8, MySQL/MariaDB, Arquitetura MVC e foco em segurança e acessibilidade.
+                        Construído com PHP 8, PostgreSQL (Supabase), Arquitetura MVC e foco em segurança e acessibilidade.
                     </p>
                 </div>
 
