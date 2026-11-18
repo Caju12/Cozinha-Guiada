@@ -81,8 +81,12 @@ loadEnv(ROOT_PATH . DIRECTORY_SEPARATOR . '.env');
  */
 function env(string $key, mixed $default = null): mixed {
     $value = getenv($key);
-    if ($value === false) {
-        return $_ENV[$key] ?? $default;
+    if ($value === false || $value === null || $value === '') {
+        $candidate = $_ENV[$key] ?? $_SERVER[$key] ?? null;
+        if ($candidate !== null && $candidate !== '') {
+            return $candidate;
+        }
+        return $default;
     }
     return $value;
 }

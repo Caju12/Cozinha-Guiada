@@ -290,6 +290,46 @@ try {
             }
             break;
 
+        case '/health':
+        case '/api/health':
+            header('Content-Type: application/json; charset=utf-8');
+            $health = [
+                'app' => 'Cozinha Guiada',
+                'status' => 'ok',
+                'timestamp' => date('c'),
+                'php_version' => PHP_VERSION,
+                'environment' => env('APP_ENV', 'production'),
+                'database' => [
+                    'connected' => false,
+                    'driver' => null,
+                    'recipes_count' => null,
+                    'error' => null
+                ],
+                'env_detected' => [
+                    'has_database_url' => !empty(env('DATABASE_URL') ?: env('POSTGRES_URL') ?: env('SUPABASE_DB_URL')),
+                    'has_db_host'      => !empty(env('DB_HOST')),
+                    'has_db_user'      => !empty(env('DB_USER')),
+                    'has_db_pass'      => !empty(env('DB_PASS')),
+                    'db_port'          => env('DB_PORT', 5432),
+                    'db_name'          => env('DB_NAME', 'postgres'),
+                    'app_debug'        => (env('APP_DEBUG') === 'true' || env('APP_DEBUG') === true)
+                ]
+            ];
+            try {
+                $db = Database::getConnection();
+                $health['database']['connected'] = true;
+                $health['database']['driver'] = $db->getAttribute(PDO::ATTR_DRIVER_NAME);
+                $stmt = $db->query("SELECT count(*) FROM receitas");
+                $health['database']['recipes_count'] = (int)$stmt->fetchColumn();
+            } catch (Throwable $e) {
+                $health['status'] = 'error';
+                $health['database']['connected'] = false;
+                $health['database']['error'] = $e->getMessage();
+                http_response_code(500);
+            }
+            echo json_encode($health, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+            exit;
+
         default:
             // Rota não encontrada (404)
             http_response_code(404);
@@ -309,12 +349,28 @@ try {
     error_log("Erro na aplicação: " . $e->getMessage());
     http_response_code(500);
     require_once VIEWS_PATH . '/layouts/header.php';
+
+    $debugBox = '';
+    $isDev = (env('APP_DEBUG') === 'true' || env('APP_DEBUG') === true || env('APP_ENV') === 'development');
+    if ($isDev) {
+        $errorDetail = htmlspecialchars($e->getMessage());
+        $debugBox = "
+            <div class='mt-6 p-4 bg-rose-100/90 border border-rose-300 rounded-xl text-left text-xs text-rose-950 font-mono'>
+                <div class='font-bold uppercase tracking-wider text-rose-900 mb-1.5'>🔍 Detalhes Técnicos (APP_DEBUG=true):</div>
+                <div class='break-all whitespace-pre-wrap leading-relaxed'>{$errorDetail}</div>
+            </div>
+        ";
+    }
+
     echo "
-        <div class='max-w-xl mx-auto my-16 bg-rose-50 p-8 rounded-2xl border border-rose-200 text-center'>
+        <div class='max-w-xl mx-auto my-16 bg-rose-50 p-8 rounded-2xl border border-rose-200 text-center shadow-sm'>
             <div class='text-5xl mb-4'>⚠️</div>
             <h1 class='text-2xl font-bold text-rose-800 mb-2'>Ops! Algo deu errado</h1>
-            <p class='text-rose-700 mb-6'>Ocorreu um problema ao processar sua requisição. Por favor, tente novamente em instantes.</p>
-            <a href='/' class='inline-block bg-rose-600 hover:bg-rose-700 text-white font-medium px-6 py-2.5 rounded-xl transition-all shadow'>Voltar ao Início</a>
+            <p class='text-rose-700 mb-2 leading-relaxed'>Ocorreu um problema ao processar sua requisição. Por favor, tente novamente em instantes.</p>
+            {$debugBox}
+            <div class='mt-6'>
+                <a href='/' class='inline-block bg-rose-600 hover:bg-rose-700 text-white font-medium px-6 py-2.5 rounded-xl transition-all shadow'>Voltar ao Início</a>
+            </div>
         </div>
     ";
     require_once VIEWS_PATH . '/layouts/footer.php';
