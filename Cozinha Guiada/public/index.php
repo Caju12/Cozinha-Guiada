@@ -345,18 +345,18 @@ try {
             require_once VIEWS_PATH . '/layouts/footer.php';
             break;
     }
-} catch (Exception $e) {
+} catch (Throwable $e) {
     error_log("Erro na aplicação: " . $e->getMessage());
     http_response_code(500);
     require_once VIEWS_PATH . '/layouts/header.php';
 
     $debugBox = '';
-    $isDev = (env('APP_DEBUG') === 'true' || env('APP_DEBUG') === true || env('APP_ENV') === 'development');
+    $isDev = (env('APP_DEBUG') === 'true' || env('APP_DEBUG') === true || env('APP_DEBUG') === '1' || env('APP_ENV') === 'development' || !empty($_GET['debug']));
     if ($isDev) {
         $errorDetail = htmlspecialchars($e->getMessage());
         $debugBox = "
             <div class='mt-6 p-4 bg-rose-100/90 border border-rose-300 rounded-xl text-left text-xs text-rose-950 font-mono'>
-                <div class='font-bold uppercase tracking-wider text-rose-900 mb-1.5'>🔍 Detalhes Técnicos (APP_DEBUG=true):</div>
+                <div class='font-bold uppercase tracking-wider text-rose-900 mb-1.5'>🔍 Detalhes Técnicos (Modo Debug Ativo):</div>
                 <div class='break-all whitespace-pre-wrap leading-relaxed'>{$errorDetail}</div>
             </div>
         ";

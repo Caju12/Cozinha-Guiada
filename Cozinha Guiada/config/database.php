@@ -21,6 +21,22 @@ class Database {
 
             if (!empty($dbUrl)) {
                 $parsed = parse_url($dbUrl);
+
+                // Fallback com regex se parse_url falhar devido a caracteres especiais não codificados na senha
+                if (!$parsed || empty($parsed['host'])) {
+                    if (preg_match('/^([a-zA-Z0-9]+):\/\/(?:([^:]+):(.*)@)?([^:\/?#]+)(?::(\d+))?(?:\/([^?#]*))?(?:\?(.*))?$/', $dbUrl, $m)) {
+                        $parsed = [
+                            'scheme' => $m[1] ?? 'pgsql',
+                            'user'   => $m[2] ?? 'postgres',
+                            'pass'   => $m[3] ?? '',
+                            'host'   => $m[4] ?? '127.0.0.1',
+                            'port'   => !empty($m[5]) ? (int)$m[5] : 5432,
+                            'path'   => '/' . ($m[6] ?? 'postgres'),
+                            'query'  => $m[7] ?? ''
+                        ];
+                    }
+                }
+
                 $scheme = strtolower((string)($parsed['scheme'] ?? ''));
                 $driver = ($scheme === 'mysql' || $scheme === 'mariadb') ? 'mysql' : 'pgsql';
                 $host   = $parsed['host'] ?? '127.0.0.1';
@@ -79,12 +95,12 @@ class Database {
             } catch (PDOException $e) {
                 error_log("Erro de conexão com o banco de dados [Cozinha Guiada]: " . $e->getMessage());
 
-                $isDev = (env('APP_DEBUG') === 'true' || env('APP_DEBUG') === true || env('APP_ENV') === 'development');
+                $isDev = (env('APP_DEBUG') === 'true' || env('APP_DEBUG') === true || env('APP_DEBUG') === '1' || env('APP_ENV') === 'development' || !empty($_GET['debug']));
                 $msg = "Não foi possível conectar ao banco de dados.";
                 if ($isDev) {
                     $msg .= " Detalhes: " . $e->getMessage() . " (Host: {$host}:{$port}, Banco: {$name}, Usuário: {$user}, Driver: {$driver})";
                 } else {
-                    $msg .= " Verifique se as variáveis de conexão (DATABASE_URL ou DB_HOST/DB_USER/DB_PASS) estão configuradas no Vercel e se o Supabase Pooler está ativo.";
+                    $msg .= " Erro de conexão com o banco. Acesse /health ou adicione '?debug=1' ao final da URL para ver os detalhes técnicos.";
                 }
 
                 throw new Exception($msg, (int)$e->getCode(), $e);
