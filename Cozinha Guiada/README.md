@@ -117,14 +117,18 @@ Cozinha Guiada/
    ```
 
 ### 3. Configuração do `.env`
-Verifique ou crie o arquivo `.env` na raiz do projeto:
+Copie `.env.example` para `.env` e preencha conforme o ambiente:
 ```ini
-DB_HOST=localhost
+# Para ambiente local com MySQL / MariaDB (XAMPP):
+DB_HOST=127.0.0.1
 DB_PORT=3306
 DB_NAME=cozinha_guiada
 DB_USER=root
 DB_PASS=
-# A aplicação usa os padrões definidos no código quando a variável não é informada.
+
+# Ou para ambiente na nuvem com Supabase (PostgreSQL - Connection Pooler porta 6543):
+# DATABASE_URL=postgresql://postgres.[PROJECT-REF]:[SENHA]@aws-0-[REGIAO].pooler.supabase.com:6543/postgres
+# DB_SSLMODE=require
 ```
 
 ### 4. Inicialização do Servidor Local

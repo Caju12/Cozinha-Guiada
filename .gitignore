@@ -1,0 +1,32 @@
+# ==============================================================================
+# PROJETO: Cozinha Guiada — .gitignore da Raiz do Repositório
+# ==============================================================================
+
+# Credenciais e configurações locais (NUNCA versionar)
+.env
+.env.*
+!.env.example
+
+# Logs e arquivos temporários de SO e editores
+*.log
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Uploads gerados por usuários (mantendo apenas gitkeep e htaccess)
+public/uploads/receitas/*
+!public/uploads/receitas/.htaccess
+!public/uploads/receitas/.gitkeep
+Cozinha Guiada/public/uploads/receitas/*
+!Cozinha Guiada/public/uploads/receitas/.htaccess
+!Cozinha Guiada/public/uploads/receitas/.gitkeep
+
+# Diretórios legados locais da raiz (o código oficial reside na pasta "Cozinha Guiada/")
+/config/
+/database/
+/public/
+/src/
+/tests/
+/views/
+/.htaccess
